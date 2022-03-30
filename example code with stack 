@@ -1,0 +1,14 @@
+import re
+import uuid
+
+firstName = r'((Joel|Kevin|Lebron).*)';
+
+lastName = [("Embiid$", "21"),
+            ("Durant$", "7"),
+            ("James$", "23")]
+
+pattern = re.compile(firstName, re.IGNORECASE)
+
+string = r'Joel Embiid'
+
+firstSearch = re.finditer(pattern, string, flags = 0)

@@ -10,12 +10,12 @@ class multiregex(object):
         for regex,text in rules:
             name = "g"+str(uuid.uuid4()).replace('-','')
             merge += ["(?P<%s>%s)" % (name,regex)]
-            self._messages[name] = text
+            self.messages[name] = text
 
         self.re=re.compile('|'.join(merge))
 
     def __call__(self,s):
-        result = self.re.search(s)
+        result = self.re.search(s) #s is regex?
 
         if result:
             groups = result.groupdict()
@@ -27,9 +27,9 @@ rules = [("foobar", "Hit a foobar"),
          ("baz", "Hit a baz"),
          ("b(ingo)?", "b with optional ingo")]
 
-#m=multiregex(rules)   
-#tests=["foobar", "foobaz", "foobazr", "b", "bingo"]
+m=multiregex(rules)   
+tests=["foobar", "foobaz", "foobazr", "b", "bingo"]
 
 
-#for hit,text in (m(x) for x in tests):
-    #print("Message: '%s' (because of '%s')" % (hit,text))
+for text,hit in (m(x) for x in tests):
+    print("Message: '%s' (because of '%s')" % (hit,text))
