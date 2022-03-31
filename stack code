@@ -15,21 +15,21 @@ class multiregex(object):
         self.re=re.compile('|'.join(merge))
 
     def __call__(self,s):
-        result = self.re.search(s) #s is regex?
+        result = self.re.search(s) 
 
         if result:
             groups = result.groupdict()
             return (next((self.messages[x], groups[x]) for x in groups.keys() if groups[x]))
 
-rules = [("foobar", "Hit a foobar"),
-         ("f.*b.*r", "fbr"),
-         ("foob.z", "Frobination"),
-         ("baz", "Hit a baz"),
-         ("b(ingo)?", "b with optional ingo")]
+rules = [("Embiid$", "21"),
+            ("Durant$", "7"),
+            ("James$", "23")]
 
 m=multiregex(rules)   
-tests=["foobar", "foobaz", "foobazr", "b", "bingo"]
+tests=["Joel Embiid", "Kevin Durant", "Lebron James"]
 
 
 for text,hit in (m(x) for x in tests):
-    print("Message: '%s' (because of '%s')" % (hit,text))
+    print("%s %s" % (hit,text))
+
+#messages variable is equivalent to our model endings
