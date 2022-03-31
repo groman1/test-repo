@@ -25,15 +25,10 @@ class multiRegex:
 rules = [("^Microsoft (Surface [^-]+(?=-[^-]))"),
          ("^Microsoft (Surface.* (\d{1}))")]
 
-tests = ["MICROSOFT SURFACE 2 - 12.3"" - CORE I5 1135G7 - 8 GB RAM".title()]
+targetModel = ["MICROSOFT SURFACE 2 - 12.3"" - CORE I5 1135G7 - 8 GB RAM".title()]
 multi = multiRegex(rules) 
 
-for test in tests:
-    match, text = multi.search(test)
+for match in targetModel:
+    match, text = multi.search(match)
     print(match)
     
-
-    #match = actual match
-    #text = regex pattern
-    #tests = targetModel 
-    #multi - calls object - <callable_iterator object at 0x105507550>

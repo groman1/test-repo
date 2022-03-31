@@ -7,10 +7,9 @@ class multiregex(object):
         merge = []
         self.messages = {}
 
-        for regex,text in rules:
+        for regex in rules:
             name = "g"+str(uuid.uuid4()).replace('-','')
             merge += ["(?P<%s>%s)" % (name,regex)]
-            self.messages[name] = text
 
         self.re=re.compile('|'.join(merge))
 
@@ -21,9 +20,9 @@ class multiregex(object):
             groups = result.groupdict()
             return (next((self.messages[x], groups[x]) for x in groups.keys() if groups[x]))
 
-rules = [("Embiid$", "21"),
-            ("Durant$", "7"),
-            ("James$", "23")]
+rules = [("Embiid$"),
+            ("Durant$"),
+            ("James$")]
 
 m=multiregex(rules)   
 tests=["Joel Embiid", "Kevin Durant", "Lebron James"]
