@@ -1,34 +1,36 @@
 import re
 import uuid
 
-class multiRegex:
+class MultiRegex:
     def __init__(self, rules):
-        self.rules = dict(zip(self.groupName(), rules))
-        merge = (f'(?P<{name}>{regex})' for name, (regex) in self.rules.items())
+        self.rules = dict(zip(self._gen_group_names(), rules))
+        merge = (f'(?P<{name}>{regex})' for name, (regex, _) in self.rules.items())
         self.pattern = re.compile('|'.join(merge))
 
     @staticmethod
-    def groupName():    
+    def _gen_group_names():      
         while True:
             yield f'g{uuid.uuid4()}'.replace('-', '')
 
-    def search(self, targetModel):
-        result = self.pattern.search(targetModel)
+    def search(self, string):
+        result = self.pattern.search(string)
         if result is not None:
             for group, match in result.groupdict().items():
                 if match:
-                    text = self.rules[group]
+                    _, text = self.rules[group]
                     return match, text
 
-rules = [("^Latitude 7210$","2-in-1"),
-         ("^Latitude 7320$","Detachable"),
-         ("^Optiplex 3280$","AIO"),
-         ("^Optiplex 7090$","Ultra"),
-         ("^Precision 3420$","Compact")]
+rules = [("7210$", "2-in-1"),
+         ("7320$", "Detachable"),
+         ("3280$", "AIO"),
+         ("7090$", "Ultra"),
+         ("3420$", "Compact")
+         ]
 
-targetModel = ["DELL LATITUDE 7210 - 12.3"" - CORE I5 1135G7 - 8 GB RAM".title()]
-multi = multiRegex(rules) 
+tests = ["DELL LATITDE 7210 - 12.3"" - CORE I5 1135G7 - 8 GB RAM".title()]
+multi = MultiRegex(rules) 
 
-for match in targetModel:
-    match, text = multi.search(match)
-    print(match)
+print(multi)
+#for test in tests:
+    #match, text = multi.search(test)
+    #print(f'{match} {text}')
