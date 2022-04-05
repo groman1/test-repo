@@ -1,0 +1,36 @@
+import re
+import uuid
+
+class MultiRegex:
+    def __init__(self, rules):
+        self.rules = dict(zip(self._gen_group_names(), rules))
+        merge = (f'(?P<{name}>{regex})' for name, (regex, _) in self.rules.items())
+        self.pattern = re.compile('|'.join(merge))
+
+    @staticmethod
+    def _gen_group_names():
+        """ Generates random group names """        
+        while True:
+            yield f'g{uuid.uuid4()}'.replace('-', '')
+
+    def search(self, string):
+        result = self.pattern.search(string)
+        if result is not None:
+            for group, match in result.groupdict().items():
+                if match:
+                    _, text = self.rules[group]
+                    return match, text
+
+
+rules = [("foobar", "Hit a foobar"),
+         ("f.*b.*r", "fbr"),
+         ("foob.z", "Frobination"),
+         ("baz", "Hit a baz"),
+         ("b(ingo)?", "b with optional ingo")]
+
+tests = ["foobar", "foobaz", "foobazr", "b", "bingo"]
+multi = MultiRegex(rules) 
+
+for test in tests:
+    match, text = multi.search(test)
+    print(f'Message: {match!r} (because of {text!r})')
