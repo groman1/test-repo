@@ -1,0 +1,67 @@
+from queue import Empty
+import re
+import uuid
+
+class baseModel_Rules:
+    def __init__(self, modelPatterns):
+        self.modelPatterns = dict(zip(self(), modelPatterns))
+        merge = (f'({regex})' for regex in self.modelPatterns.items())
+        self.pattern = re.compile('|'.join(merge))
+
+    def search(self, targetModel):
+        result = self.pattern.search(targetModel)
+        if result is not None:
+            for group, match in result.groupdict().items():
+                if match:
+                    text = self.modelPatterns[group]
+                    return match, text
+
+class modelEnding_Rules:
+    def __init__(self, endingPatterns):
+        self.endingPatterns = dict(zip(self.groupName(), endingPatterns))
+        merge = (f'(?P<{name}>{regex})' for name, (regex, _) in self.endingPatterns.items())
+        self.pattern = re.compile('|'.join(merge))
+
+    @staticmethod
+    def groupName():      
+        while True:
+            yield f'g{uuid.uuid4()}'.replace('-', '')
+
+    def search(self, baseModel):
+        result = self.pattern.search(baseModel)
+
+        if result is not None:
+            for group, endingMatch in result.groupdict().items():
+                if match:
+                    _, endingText = self.endingPatterns[group]
+                    return endingMatch, endingText
+
+modelPatterns = [("((Latitude|Optiplex|Precision) (\d{4}))"),
+         ("((Precision).*(\d{4}))"),
+         ("^Dell.*Enterprise$"),
+         ("XPS \d{2} \d{4}")]
+
+endingPatterns = [("7210$", "2-in-1"),
+         ("7320$", "Detachable"),
+         ("3280$", "AIO"),
+         ("7090$", "Ultra"),
+         ("3420$", "Compact")
+         ]
+
+targetModel = ["DELL PRECISION 3421 - 12.3"" - CORE I5 1135G7 - 8 GB RAM".title()]
+model = baseModel_Rules(modelPatterns) 
+modelEndings = modelEnding_Rules(endingPatterns) 
+
+for match in targetModel:
+    match, text = model.search(match)
+    
+baseModel = match
+
+print(modelEnding_Rules.endingMatch)
+#changed for match to if match 
+
+#if match in baseModel:
+    #match, text = modelEndings.search(match)
+    #ending = text
+    #print(f'{baseModel}' + ' ' + f'{ending}')
+
