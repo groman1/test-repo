@@ -1,38 +1,33 @@
 import re
-import uuid
 
 class baseModel_Rules:
-    def __init__(self, modelPatterns):
-        self.modelPatterns = dict(modelPatterns)
-        merge = (f'({regex})' for regex in self.modelPatterns.items())
-        self.pattern = re.compile('|'.join(merge))
+    def __init__(self, modelPatterns, endingPatterns):
+
+        self.modelPatterns = dict(zip(modelPatterns, endingPatterns))
+        self.endingPatterns = dict(zip(modelPatterns, endingPatterns))
+
+        baseMerge = (f'{regex})' for regex in self.modelPatterns.items())
+        endingMerge = (f'{regex})' for regex in self.endingPatterns.items())
+
+        self.modelPattern = re.compile('|'.join(baseMerge))
+        self.endingpattern = re.compile('|'.join(endingMerge))
 
     def search(self, targetModel):
-        result = self.pattern.search(targetModel)
+        result = self.modelPattern.search(targetModel)
         if result is not None:
             for group, match in result.groupdict().items():
                 if match:
                     text = self.modelPatterns[group]
                     return match, text
 
-class modelEnding_Rules:
-    def __init__(self, endingPatterns):
-        self.endingPatterns = dict(zip(self.groupName(), endingPatterns))
-        merge = (f'(?P<{name}>{regex})' for name, (regex, _) in self.endingPatterns.items())
-        self.pattern = re.compile('|'.join(merge))
+        #changed target model to be the match of previous search
 
-    @staticmethod
-    def groupName():      
-        while True:
-            yield f'g{uuid.uuid4()}'.replace('-', '')
-
-    def search(self, string):
-        result = self.pattern.search(string)
-        if result is not None:
-            for group, match in result.groupdict().items():
-                if match:
-                    _, text = self.endingPatterns[group]
-                    return match, text
+                result = self.modelPattern.search(targetModel)
+                if result is not None:
+                    for group, match in result.groupdict().items():
+                        if match:
+                            text = self.modelPatterns[group]
+                            return match, text
 
 modelPatterns = [("((Latitude|Optiplex|Precision) (\d{4}))"),
          ("((Precision).*(\d{4}))"),
@@ -48,7 +43,7 @@ endingPatterns = [("7210$", "2-in-1"),
 
 targetModel = ["DELL PRECISION 7320 - 12.3"" - CORE I5 1135G7 - 8 GB RAM".title()]
 model = baseModel_Rules(modelPatterns) 
-modelEndings = modelEnding_Rules(endingPatterns) 
+modelEndings = baseModel_Rules(endingPatterns) 
 
 for match in targetModel:
     match, text = model.search(match)
